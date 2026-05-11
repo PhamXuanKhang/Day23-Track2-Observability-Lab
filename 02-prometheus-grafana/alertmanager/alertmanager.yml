@@ -1,13 +1,12 @@
 global:
   resolve_timeout: 1m
-  slack_api_url_file: ''   # we use webhook URL inline below
 
 route:
   receiver: 'slack-default'
   group_by: ['alertname', 'service']
-  group_wait: 10s
-  group_interval: 1m
-  repeat_interval: 1h
+  group_wait: 5s
+  group_interval: 10s
+  repeat_interval: 5m
   routes:
     - matchers:
         - severity = "critical"
@@ -20,7 +19,7 @@ route:
 receivers:
   - name: 'slack-default'
     slack_configs:
-      - api_url: '{{ env "SLACK_WEBHOOK_URL" }}'
+      - api_url_file: /etc/alertmanager/slack-webhook-url
         channel: '#observability'
         send_resolved: true
         title: '{{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }} {{ .GroupLabels.alertname }}'
@@ -33,10 +32,10 @@ receivers:
 
   - name: 'slack-critical'
     slack_configs:
-      - api_url: '{{ env "SLACK_WEBHOOK_URL" }}'
+      - api_url_file: /etc/alertmanager/slack-webhook-url
         channel: '#oncall'
         send_resolved: true
-        title: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
+        title: '{{ if eq .Status "firing" }}🚨 CRITICAL{{ else }}✅ RESOLVED{{ end }}: {{ .GroupLabels.alertname }}'
         text: |
           {{ range .Alerts }}
           *{{ .Annotations.summary }}*

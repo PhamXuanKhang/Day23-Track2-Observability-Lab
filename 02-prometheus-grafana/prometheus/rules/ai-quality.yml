@@ -21,13 +21,13 @@ groups:
 
       - alert: ServiceDown
         expr: up{job="inference-api"} == 0
-        for: 1m
+        for: 30s
         labels:
           severity: critical
           service: inference-api
         annotations:
           summary: "inference-api is down"
-          description: "Prometheus has been unable to scrape inference-api for 1 minute."
+          description: "Prometheus has been unable to scrape inference-api for 30 seconds."
 
       - alert: InferenceQualityDrop
         expr: avg(inference_quality_score) by (model) < 0.7

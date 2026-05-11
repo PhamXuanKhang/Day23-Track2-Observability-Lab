@@ -27,15 +27,14 @@ scrape_configs:
     static_configs:
       - targets: ['otel-collector:8888']
 
-  # Day 19 vector-store integration (optional, see §05)
-  # Uncomment + set DAY19_QDRANT_URL in .env
-  # - job_name: 'day19-qdrant'
-  #   static_configs:
-  #     - targets: ['host.docker.internal:6333']
-  #   metrics_path: /metrics
+  # Day 19 vector-store integration (stub on host port 9101, see §05)
+  - job_name: 'day19-qdrant'
+    static_configs:
+      - targets: ['host.docker.internal:9101']
+    metrics_path: /metrics
 
-  # Day 20 model-serving integration (optional, see §05)
-  # - job_name: 'day20-llamacpp'
-  #   static_configs:
-  #     - targets: ['host.docker.internal:8080']
-  #   metrics_path: /metrics
+  # Day 20 model-serving integration (stub on host port 9102, see §05)
+  - job_name: 'day20-llamacpp'
+    static_configs:
+      - targets: ['host.docker.internal:9102']
+    metrics_path: /metrics

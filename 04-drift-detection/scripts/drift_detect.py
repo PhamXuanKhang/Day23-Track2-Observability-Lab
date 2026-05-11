@@ -94,18 +94,40 @@ def main() -> int:
     for col, m in summary.items():
         print(f"  {col:<20} PSI={m['psi']:.3f}  KL={m['kl']:.3f}  KS={m['ks_stat']:.3f}  drift={m['drift']}")
 
-    # Optional: full Evidently HTML report (large dependency, gracefully skip if missing)
+    html_path = REPORTS_DIR / "drift-report.html"
     try:
-        from evidently.report import Report
         from evidently.metric_preset import DataDriftPreset
+        from evidently.report import Report
 
         report = Report(metrics=[DataDriftPreset()])
         report.run(reference_data=reference, current_data=current)
-        html_path = REPORTS_DIR / "drift-report.html"
         report.save_html(str(html_path))
-        print(f"Wrote: {html_path}")
-    except ImportError:
-        print("evidently not installed; skipping HTML report. Install with: pip install evidently")
+    except Exception as exc:
+        rows = "\n".join(
+            "<tr>"
+            f"<td>{feature}</td>"
+            f"<td>{metrics['psi']}</td>"
+            f"<td>{metrics['kl']}</td>"
+            f"<td>{metrics['ks_stat']}</td>"
+            f"<td>{metrics['ks_pvalue']}</td>"
+            f"<td>{metrics['drift']}</td>"
+            "</tr>"
+            for feature, metrics in summary.items()
+        )
+        html_path.write_text(
+            "<!doctype html>"
+            "<html><head><meta charset='utf-8'><title>Drift Report</title>"
+            "<style>body{font-family:sans-serif;margin:2rem}table{border-collapse:collapse}"
+            "td,th{border:1px solid #ddd;padding:.5rem}th{background:#f5f5f5}</style>"
+            "</head><body>"
+            "<h1>Drift Report</h1>"
+            f"<p>Evidently report fallback generated because Evidently was unavailable or incompatible: {exc}</p>"
+            "<table><thead><tr><th>Feature</th><th>PSI</th><th>KL</th><th>KS stat</th>"
+            "<th>KS p-value</th><th>Drift</th></tr></thead>"
+            f"<tbody>{rows}</tbody></table>"
+            "</body></html>"
+        )
+    print(f"Wrote: {html_path}")
     return 0
 
 

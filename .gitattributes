@@ -1,0 +1,12 @@
+# Force LF line endings for all text files — required for WSL2/Docker/bash
+* text=auto eol=lf
+
+# Ensure shell scripts and Makefile are always LF
+*.sh text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+Makefile text eol=lf
+Dockerfile text eol=lf

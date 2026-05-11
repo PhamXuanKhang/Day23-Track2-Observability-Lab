@@ -9,8 +9,7 @@ venv/
 # Lab artifacts (generated)
 benchmarks/*.csv
 benchmarks/*.json
-submission/screenshots/*.png
-submission/screenshots/*.jpg
+# submission/screenshots are needed for grading — do NOT ignore
 
 # Local OS junk
 .DS_Store
